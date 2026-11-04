@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import type { UnlistenFn } from '@tauri-apps/api/event'
 import { isMacPlatform } from '@/modules/shortcuts/platform'
+import { useSettingsStore } from '@/stores/settings'
 
 const props = defineProps<{
   forceLight?: boolean
@@ -21,6 +22,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const settings = useSettingsStore()
 const titleBarTrackText = computed(() => (
   props.hasPlaybackSession ? props.albumName || props.trackName || '' : ''
 ))
@@ -140,7 +142,7 @@ onUnmounted(() => {
     <!-- 播放器模式：居中播放信息（等品牌淡完再出现） -->
     <transition name="tb-center-fade">
       <div v-if="nowPlaying" class="tb-np-center" data-tauri-drag-region>
-        <span class="tb-np-label">{{ titleBarLabel }}</span>
+        <span v-if="settings.showNowPlayingTitle" class="tb-np-label">{{ titleBarLabel }}</span>
         <transition name="tb-track-swap" mode="out-in">
           <span :key="titleBarTrackKey" class="tb-np-track">{{ titleBarTrackText }}</span>
         </transition>
